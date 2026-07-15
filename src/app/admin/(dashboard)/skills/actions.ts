@@ -21,7 +21,7 @@ export async function createSkill(formData: FormData) {
   await prisma.skill.create({ data: getSkillData(formData) });
   revalidatePath("/admin");
   revalidatePath("/admin/skills");
-  redirect("/admin/skills");
+  redirect("/admin/skills?created=true");
 }
 
 export async function updateSkill(id: string, formData: FormData) {
@@ -32,11 +32,20 @@ export async function updateSkill(id: string, formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/skills");
-  redirect("/admin/skills");
+  redirect("/admin/skills?updated=true");
 }
 
 export async function deleteSkill(id: string) {
-  await prisma.skill.delete({ where: { id } });
-  revalidatePath("/admin");
-  revalidatePath("/admin/skills");
+  try {
+    await prisma.skill.delete({
+      where: { id },
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/skills");
+  } catch {
+    redirect("/admin/skills?error=delete");
+  }
+
+  redirect("/admin/skills?deleted=true");
 }

@@ -1,7 +1,18 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { DeleteProjectButton } from "./DeleteProjectButton";
-export default async function ProjectsPage() {
+
+export default async function ProjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    created?: string;
+    updated?: string;
+    deleted?: string;
+    error?: string;
+  }>;
+}) {
+  const { created, updated, deleted, error } = await searchParams;
   const projects = await prisma.project.findMany({
     orderBy: { createdAt: "desc" },
   });
@@ -21,6 +32,30 @@ export default async function ProjectsPage() {
           Add project
         </Link>
       </div>
+
+      {created === "true" && (
+        <div className="mt-6 rounded-lg border border-green-800 bg-green-950 p-4 text-green-300">
+          Project created successfully.
+        </div>
+      )}
+
+      {updated === "true" && (
+        <div className="mt-6 rounded-lg border border-green-800 bg-green-950 p-4 text-green-300">
+          Project updated successfully.
+        </div>
+      )}
+
+      {deleted === "true" && (
+        <div className="mt-6 rounded-lg border border-green-800 bg-green-950 p-4 text-green-300">
+          Project deleted successfully.
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-800 bg-red-950 p-4 text-red-300">
+          Something went wrong. Please try again.
+        </div>
+      )}
 
       <div className="mt-8 space-y-4">
         {projects.length === 0 ? (

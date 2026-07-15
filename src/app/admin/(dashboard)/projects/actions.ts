@@ -28,7 +28,8 @@ export async function createProject(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/projects");
-  redirect("/admin/projects");
+
+  redirect("/admin/projects?created=true");
 }
 
 export async function updateProject(id: string, formData: FormData) {
@@ -41,14 +42,21 @@ export async function updateProject(id: string, formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/projects");
-  redirect("/admin/projects");
+
+  redirect("/admin/projects?updated=true");
 }
 
 export async function deleteProject(id: string) {
-  await prisma.project.delete({
-    where: { id },
-  });
+  try {
+    await prisma.project.delete({
+      where: { id },
+    });
 
-  revalidatePath("/admin");
-  revalidatePath("/admin/projects");
+    revalidatePath("/admin");
+    revalidatePath("/admin/projects");
+  } catch {
+    redirect("/admin/projects?error=delete");
+  }
+
+  redirect("/admin/projects?deleted=true");
 }
