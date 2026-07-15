@@ -54,6 +54,7 @@ export default function About({
           <div>
             {avatarUrl ? (
               <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={avatarUrl}
                   alt={fullName}

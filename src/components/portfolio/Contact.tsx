@@ -1,4 +1,6 @@
 import { sendContactMessage } from "@/app/contact-actions";
+import ContactSubmitButton from "./ContactSubmitButton";
+import ContactAlert from "./ContactAlert";
 
 type ContactProps = {
   email: string | null;
@@ -48,15 +50,17 @@ export default function Contact({
 
           <div>
             {contactSuccess === "true" && (
-              <div className="mb-6 rounded-xl border border-green-800 bg-green-950/50 p-4 text-green-300">
-                Your message was sent successfully.
-              </div>
+              <ContactAlert
+                type="success"
+                message="Your message was sent successfully."
+              />
             )}
 
             {contactError && (
-              <div className="mb-6 rounded-xl border border-red-800 bg-red-950/50 p-4 text-red-300">
-                Please complete all required fields.
-              </div>
+              <ContactAlert
+                type="error"
+                message="Please complete all required fields."
+              />
             )}
 
             <form
@@ -105,12 +109,7 @@ export default function Contact({
                 />
               </div>
 
-              <button
-                type="submit"
-                className="rounded-full bg-white px-7 py-3 font-medium text-black transition hover:bg-zinc-200"
-              >
-                Send message
-              </button>
+              <ContactSubmitButton />
             </form>
           </div>
         </div>

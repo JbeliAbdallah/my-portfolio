@@ -50,6 +50,7 @@ export default function Videos({ videos }: VideosProps) {
               >
                 {video.thumbnailUrl ? (
                   <div className="relative aspect-video overflow-hidden border-b border-white/10 bg-zinc-900">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={video.thumbnailUrl}
                       alt={video.title}
