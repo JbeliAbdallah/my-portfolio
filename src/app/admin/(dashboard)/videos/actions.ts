@@ -2,14 +2,15 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { videoSchema } from "@/lib/validation/video";
+import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { videoSchema } from "@/lib/validation/video";
 
 function getVideoData(formData: FormData) {
   const publishedAt = String(formData.get("publishedAt") ?? "").trim();
 
-  return videoSchema.parse({
+  return validate(videoSchema, {
     title: String(formData.get("title") ?? ""),
     description: String(formData.get("description") ?? ""),
     youtubeUrl: String(formData.get("youtubeUrl") ?? ""),
@@ -22,8 +23,14 @@ function getVideoData(formData: FormData) {
 export async function createVideo(formData: FormData) {
   await requireAdmin();
 
+  const result = getVideoData(formData);
+
+  if (!result.success) {
+    redirect(`/admin/videos/new?error=${encodeURIComponent(result.error)}`);
+  }
+
   await prisma.video.create({
-    data: getVideoData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin");
@@ -35,9 +42,17 @@ export async function createVideo(formData: FormData) {
 export async function updateVideo(id: string, formData: FormData) {
   await requireAdmin();
 
+  const result = getVideoData(formData);
+
+  if (!result.success) {
+    redirect(
+      `/admin/videos/${id}/edit?error=${encodeURIComponent(result.error)}`,
+    );
+  }
+
   await prisma.video.update({
     where: { id },
-    data: getVideoData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin");

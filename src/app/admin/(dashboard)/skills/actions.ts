@@ -2,14 +2,15 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { skillSchema } from "@/lib/validation/skill";
+import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { skillSchema } from "@/lib/validation/skill";
 
 function getSkillData(formData: FormData) {
   const levelValue = String(formData.get("level") ?? "").trim();
 
-  return skillSchema.parse({
+  return validate(skillSchema, {
     name: String(formData.get("name") ?? ""),
     category: String(formData.get("category") ?? ""),
     level: levelValue === "" ? null : Number(levelValue),
@@ -22,8 +23,14 @@ function getSkillData(formData: FormData) {
 export async function createSkill(formData: FormData) {
   await requireAdmin();
 
+  const result = getSkillData(formData);
+
+  if (!result.success) {
+    redirect(`/admin/skills/new?error=${encodeURIComponent(result.error)}`);
+  }
+
   await prisma.skill.create({
-    data: getSkillData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin");
@@ -35,9 +42,17 @@ export async function createSkill(formData: FormData) {
 export async function updateSkill(id: string, formData: FormData) {
   await requireAdmin();
 
+  const result = getSkillData(formData);
+
+  if (!result.success) {
+    redirect(
+      `/admin/skills/${id}/edit?error=${encodeURIComponent(result.error)}`,
+    );
+  }
+
   await prisma.skill.update({
     where: { id },
-    data: getSkillData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin");

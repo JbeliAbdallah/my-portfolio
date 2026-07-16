@@ -2,23 +2,27 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { settingsSchema } from "@/lib/validation/settings";
+import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { settingsSchema } from "@/lib/validation/settings";
+
+function getSettingsData(formData: FormData) {
+  return validate(settingsSchema, {
+    siteName: String(formData.get("siteName") ?? ""),
+    siteDescription: String(formData.get("siteDescription") ?? ""),
+    logoUrl: String(formData.get("logoUrl") ?? ""),
+    faviconUrl: String(formData.get("faviconUrl") ?? ""),
+  });
+}
 
 export async function saveSiteSettings(formData: FormData) {
   await requireAdmin();
 
-  const { siteName, siteDescription, logoUrl, faviconUrl } =
-    settingsSchema.parse({
-      siteName: String(formData.get("siteName") ?? ""),
-      siteDescription: String(formData.get("siteDescription") ?? ""),
-      logoUrl: String(formData.get("logoUrl") ?? ""),
-      faviconUrl: String(formData.get("faviconUrl") ?? ""),
-    });
+  const result = getSettingsData(formData);
 
-  if (!siteName) {
-    redirect("/admin/settings?error=missing-site-name");
+  if (!result.success) {
+    redirect(`/admin/settings?error=${encodeURIComponent(result.error)}`);
   }
 
   const existingSettings = await prisma.siteSettings.findFirst();
@@ -28,21 +32,11 @@ export async function saveSiteSettings(formData: FormData) {
       where: {
         id: existingSettings.id,
       },
-      data: {
-        siteName,
-        siteDescription,
-        logoUrl,
-        faviconUrl,
-      },
+      data: result.data,
     });
   } else {
     await prisma.siteSettings.create({
-      data: {
-        siteName,
-        siteDescription,
-        logoUrl,
-        faviconUrl,
-      },
+      data: result.data,
     });
   }
 

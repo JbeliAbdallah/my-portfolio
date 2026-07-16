@@ -2,12 +2,13 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { socialLinkSchema } from "@/lib/validation/socialLink";
+import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { socialLinkSchema } from "@/lib/validation/socialLink";
 
 function getSocialLinkData(formData: FormData) {
-  return socialLinkSchema.parse({
+  return validate(socialLinkSchema, {
     platform: String(formData.get("platform") ?? ""),
     url: String(formData.get("url") ?? ""),
     icon: String(formData.get("icon") ?? ""),
@@ -19,8 +20,16 @@ function getSocialLinkData(formData: FormData) {
 export async function createSocialLink(formData: FormData) {
   await requireAdmin();
 
+  const result = getSocialLinkData(formData);
+
+  if (!result.success) {
+    redirect(
+      `/admin/social-links/new?error=${encodeURIComponent(result.error)}`,
+    );
+  }
+
   await prisma.socialLink.create({
-    data: getSocialLinkData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin/social-links");
@@ -31,9 +40,17 @@ export async function createSocialLink(formData: FormData) {
 export async function updateSocialLink(id: string, formData: FormData) {
   await requireAdmin();
 
+  const result = getSocialLinkData(formData);
+
+  if (!result.success) {
+    redirect(
+      `/admin/social-links/${id}/edit?error=${encodeURIComponent(result.error)}`,
+    );
+  }
+
   await prisma.socialLink.update({
     where: { id },
-    data: getSocialLinkData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin/social-links");

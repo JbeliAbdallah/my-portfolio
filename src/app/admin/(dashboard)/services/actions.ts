@@ -2,12 +2,13 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { serviceSchema } from "@/lib/validation/service";
+import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { serviceSchema } from "@/lib/validation/service";
 
 function getServiceData(formData: FormData) {
-  return serviceSchema.parse({
+  return validate(serviceSchema, {
     title: String(formData.get("title") ?? ""),
     description: String(formData.get("description") ?? ""),
     icon: String(formData.get("icon") ?? ""),
@@ -19,8 +20,14 @@ function getServiceData(formData: FormData) {
 export async function createService(formData: FormData) {
   await requireAdmin();
 
+  const result = getServiceData(formData);
+
+  if (!result.success) {
+    redirect(`/admin/services/new?error=${encodeURIComponent(result.error)}`);
+  }
+
   await prisma.service.create({
-    data: getServiceData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin");
@@ -32,9 +39,17 @@ export async function createService(formData: FormData) {
 export async function updateService(id: string, formData: FormData) {
   await requireAdmin();
 
+  const result = getServiceData(formData);
+
+  if (!result.success) {
+    redirect(
+      `/admin/services/${id}/edit?error=${encodeURIComponent(result.error)}`,
+    );
+  }
+
   await prisma.service.update({
     where: { id },
-    data: getServiceData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin");

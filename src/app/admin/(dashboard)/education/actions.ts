@@ -2,15 +2,16 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { educationSchema } from "@/lib/validation/education";
+import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { educationSchema } from "@/lib/validation/education";
 
 function getEducationData(formData: FormData) {
   const startDate = String(formData.get("startDate") ?? "").trim();
   const endDate = String(formData.get("endDate") ?? "").trim();
 
-  return educationSchema.parse({
+  return validate(educationSchema, {
     institution: String(formData.get("institution") ?? ""),
     degree: String(formData.get("degree") ?? ""),
     field: String(formData.get("field") ?? ""),
@@ -25,8 +26,14 @@ function getEducationData(formData: FormData) {
 export async function createEducation(formData: FormData) {
   await requireAdmin();
 
+  const result = getEducationData(formData);
+
+  if (!result.success) {
+    redirect(`/admin/education/new?error=${encodeURIComponent(result.error)}`);
+  }
+
   await prisma.education.create({
-    data: getEducationData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin/education");
@@ -37,9 +44,17 @@ export async function createEducation(formData: FormData) {
 export async function updateEducation(id: string, formData: FormData) {
   await requireAdmin();
 
+  const result = getEducationData(formData);
+
+  if (!result.success) {
+    redirect(
+      `/admin/education/${id}/edit?error=${encodeURIComponent(result.error)}`,
+    );
+  }
+
   await prisma.education.update({
     where: { id },
-    data: getEducationData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin/education");

@@ -2,14 +2,15 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { experienceSchema } from "@/lib/validation/experience";
+import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { experienceSchema } from "@/lib/validation/experience";
 
 function getExperienceData(formData: FormData) {
   const endDate = String(formData.get("endDate") ?? "").trim();
 
-  return experienceSchema.parse({
+  return validate(experienceSchema, {
     company: String(formData.get("company") ?? ""),
     position: String(formData.get("position") ?? ""),
     description: String(formData.get("description") ?? ""),
@@ -21,11 +22,18 @@ function getExperienceData(formData: FormData) {
     isVisible: formData.get("isVisible") === "on",
   });
 }
+
 export async function createExperience(formData: FormData) {
   await requireAdmin();
 
+  const result = getExperienceData(formData);
+
+  if (!result.success) {
+    redirect(`/admin/experience/new?error=${encodeURIComponent(result.error)}`);
+  }
+
   await prisma.experience.create({
-    data: getExperienceData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin");
@@ -37,9 +45,17 @@ export async function createExperience(formData: FormData) {
 export async function updateExperience(id: string, formData: FormData) {
   await requireAdmin();
 
+  const result = getExperienceData(formData);
+
+  if (!result.success) {
+    redirect(
+      `/admin/experience/${id}/edit?error=${encodeURIComponent(result.error)}`,
+    );
+  }
+
   await prisma.experience.update({
     where: { id },
-    data: getExperienceData(formData),
+    data: result.data,
   });
 
   revalidatePath("/admin");

@@ -1,13 +1,14 @@
 "use server";
 
-import { projectSchema } from "@/lib/validation/project";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { projectSchema } from "@/lib/validation/project";
+import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 function getProjectData(formData: FormData) {
-  return projectSchema.parse({
+  return validate(projectSchema, {
     title: String(formData.get("title") ?? ""),
     slug: String(formData.get("slug") ?? ""),
     description: String(formData.get("description") ?? ""),
@@ -26,9 +27,15 @@ function getProjectData(formData: FormData) {
 export async function createProject(formData: FormData) {
   await requireAdmin();
 
-  const data = getProjectData(formData);
+  const result = getProjectData(formData);
 
-  await prisma.project.create({ data });
+  if (!result.success) {
+    redirect(`/admin/projects/new?error=${encodeURIComponent(result.error)}`);
+  }
+
+  await prisma.project.create({
+    data: result.data,
+  });
 
   revalidatePath("/admin");
   revalidatePath("/admin/projects");
@@ -39,11 +46,17 @@ export async function createProject(formData: FormData) {
 export async function updateProject(id: string, formData: FormData) {
   await requireAdmin();
 
-  const data = getProjectData(formData);
+  const result = getProjectData(formData);
+
+  if (!result.success) {
+    redirect(
+      `/admin/projects/${id}/edit?error=${encodeURIComponent(result.error)}`,
+    );
+  }
 
   await prisma.project.update({
     where: { id },
-    data,
+    data: result.data,
   });
 
   revalidatePath("/admin");
