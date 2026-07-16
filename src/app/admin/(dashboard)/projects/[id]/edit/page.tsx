@@ -3,12 +3,16 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { updateProject } from "../../actions";
 
-export default async function EditProjectPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ id: string }>;
-}) {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function EditProjectPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { error } = await searchParams;
 
   const project = await prisma.project.findUnique({
     where: { id },
@@ -31,6 +35,12 @@ export default async function EditProjectPage({
 
       <h1 className="mt-4 text-3xl font-bold">Edit Project</h1>
 
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {error}
+        </div>
+      )}
+
       <form
         action={updateProjectWithId}
         className="mt-8 space-y-6 rounded-xl border border-zinc-800 bg-zinc-900 p-6"
@@ -41,6 +51,7 @@ export default async function EditProjectPage({
           defaultValue={project.title}
           required
         />
+
         <Field label="Slug" name="slug" defaultValue={project.slug} required />
 
         <div>
@@ -50,13 +61,14 @@ export default async function EditProjectPage({
           >
             Description
           </label>
+
           <textarea
             id="description"
             name="description"
             rows={6}
             required
             defaultValue={project.description}
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
           />
         </div>
 
@@ -66,12 +78,14 @@ export default async function EditProjectPage({
           type="url"
           defaultValue={project.imageUrl}
         />
+
         <Field
           label="Live URL"
           name="liveUrl"
           type="url"
           defaultValue={project.liveUrl}
         />
+
         <Field
           label="GitHub URL"
           name="githubUrl"
@@ -99,7 +113,7 @@ export default async function EditProjectPage({
 
         <button
           type="submit"
-          className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+          className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
           Save changes
         </button>
@@ -133,7 +147,7 @@ function Field({
         type={type}
         required={required}
         defaultValue={defaultValue ?? ""}
-        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
       />
     </div>
   );

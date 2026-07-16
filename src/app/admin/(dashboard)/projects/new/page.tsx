@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { createProject } from "../actions";
 
-export default function NewProjectPage() {
+type Props = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function NewProjectPage({ searchParams }: Props) {
+  const { error } = await searchParams;
+
   return (
     <div className="max-w-3xl">
       <Link
@@ -12,6 +20,12 @@ export default function NewProjectPage() {
       </Link>
 
       <h1 className="mt-4 text-3xl font-bold">Add Project</h1>
+
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {error}
+        </div>
+      )}
 
       <form
         action={createProject}
@@ -27,6 +41,7 @@ export default function NewProjectPage() {
           >
             Description
           </label>
+
           <textarea
             id="description"
             name="description"
@@ -47,6 +62,7 @@ export default function NewProjectPage() {
         />
 
         <Checkbox label="Featured project" name="featured" />
+
         <Checkbox
           label="Visible on portfolio"
           name="isVisible"
@@ -55,7 +71,7 @@ export default function NewProjectPage() {
 
         <button
           type="submit"
-          className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+          className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
           Create project
         </button>
@@ -82,13 +98,14 @@ function Field({
       <label htmlFor={name} className="mb-2 block text-sm text-zinc-300">
         {label}
       </label>
+
       <input
         id={name}
         name={name}
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
       />
     </div>
   );
