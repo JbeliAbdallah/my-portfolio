@@ -1,27 +1,31 @@
 "use server";
 
+import { projectSchema } from "@/lib/validation/project";
+import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 function getProjectData(formData: FormData) {
-  return {
-    title: String(formData.get("title") ?? "").trim(),
-    slug: String(formData.get("slug") ?? "").trim(),
-    description: String(formData.get("description") ?? "").trim(),
-    imageUrl: String(formData.get("imageUrl") ?? "").trim() || null,
-    liveUrl: String(formData.get("liveUrl") ?? "").trim() || null,
-    githubUrl: String(formData.get("githubUrl") ?? "").trim() || null,
+  return projectSchema.parse({
+    title: String(formData.get("title") ?? ""),
+    slug: String(formData.get("slug") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    imageUrl: String(formData.get("imageUrl") ?? ""),
+    liveUrl: String(formData.get("liveUrl") ?? ""),
+    githubUrl: String(formData.get("githubUrl") ?? ""),
     technologies: String(formData.get("technologies") ?? "")
       .split(",")
       .map((item) => item.trim())
       .filter(Boolean),
     featured: formData.get("featured") === "on",
     isVisible: formData.get("isVisible") === "on",
-  };
+  });
 }
 
 export async function createProject(formData: FormData) {
+  await requireAdmin();
+
   const data = getProjectData(formData);
 
   await prisma.project.create({ data });
@@ -33,6 +37,8 @@ export async function createProject(formData: FormData) {
 }
 
 export async function updateProject(id: string, formData: FormData) {
+  await requireAdmin();
+
   const data = getProjectData(formData);
 
   await prisma.project.update({
@@ -47,6 +53,8 @@ export async function updateProject(id: string, formData: FormData) {
 }
 
 export async function deleteProject(id: string) {
+  await requireAdmin();
+
   try {
     await prisma.project.delete({
       where: { id },

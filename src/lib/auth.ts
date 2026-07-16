@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
 
@@ -32,7 +33,9 @@ export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
-  if (!token) return null;
+  if (!token) {
+    return null;
+  }
 
   try {
     const { payload } = await jwtVerify(token, secret);
@@ -44,6 +47,16 @@ export async function getSession(): Promise<SessionPayload | null> {
   } catch {
     return null;
   }
+}
+
+export async function requireAdmin() {
+  const session = await getSession();
+
+  if (!session) {
+    redirect("/admin/login");
+  }
+
+  return session;
 }
 
 export async function deleteSession() {

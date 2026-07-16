@@ -1,15 +1,21 @@
 "use server";
 
+import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { settingsSchema } from "@/lib/validation/settings";
 
 export async function saveSiteSettings(formData: FormData) {
-  const siteName = String(formData.get("siteName") ?? "").trim();
-  const siteDescription =
-    String(formData.get("siteDescription") ?? "").trim() || null;
-  const logoUrl = String(formData.get("logoUrl") ?? "").trim() || null;
-  const faviconUrl = String(formData.get("faviconUrl") ?? "").trim() || null;
+  await requireAdmin();
+
+  const { siteName, siteDescription, logoUrl, faviconUrl } =
+    settingsSchema.parse({
+      siteName: String(formData.get("siteName") ?? ""),
+      siteDescription: String(formData.get("siteDescription") ?? ""),
+      logoUrl: String(formData.get("logoUrl") ?? ""),
+      faviconUrl: String(formData.get("faviconUrl") ?? ""),
+    });
 
   if (!siteName) {
     redirect("/admin/settings?error=missing-site-name");
