@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { createVideo } from "../actions";
 
-export default function NewVideoPage() {
+type Props = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function NewVideoPage({ searchParams }: Props) {
+  const { error } = await searchParams;
+
   return (
     <div className="max-w-3xl">
       <Link
@@ -12,6 +20,12 @@ export default function NewVideoPage() {
       </Link>
 
       <h1 className="mt-4 text-3xl font-bold">Add Video</h1>
+
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-300">
+          {error}
+        </div>
+      )}
 
       <form
         action={createVideo}
@@ -31,7 +45,7 @@ export default function NewVideoPage() {
             id="description"
             name="description"
             rows={6}
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
           />
         </div>
 
@@ -59,7 +73,7 @@ export default function NewVideoPage() {
 
         <button
           type="submit"
-          className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+          className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
           Create video
         </button>
@@ -93,7 +107,7 @@ function Field({
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
       />
     </div>
   );

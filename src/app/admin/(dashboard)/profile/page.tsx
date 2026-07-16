@@ -1,17 +1,21 @@
 import { prisma } from "@/lib/prisma";
 import { saveProfile } from "./actions";
 
-export default async function ProfilePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ saved?: string }>;
-}) {
-  const { saved } = await searchParams;
+type Props = {
+  searchParams: Promise<{
+    saved?: string;
+    error?: string;
+  }>;
+};
+
+export default async function ProfilePage({ searchParams }: Props) {
+  const { saved, error } = await searchParams;
   const profile = await prisma.profile.findFirst();
 
   return (
     <div className="max-w-3xl">
       <h1 className="text-3xl font-bold">Profile</h1>
+
       <p className="mt-2 text-zinc-400">
         Manage your public portfolio information.
       </p>
@@ -19,6 +23,12 @@ export default async function ProfilePage({
       {saved === "true" && (
         <div className="mt-6 rounded-lg border border-green-800 bg-green-950 p-4 text-green-300">
           Profile saved successfully.
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-300">
+          {error}
         </div>
       )}
 
@@ -43,12 +53,13 @@ export default async function ProfilePage({
           <label htmlFor="bio" className="mb-2 block text-sm text-zinc-300">
             Bio
           </label>
+
           <textarea
             id="bio"
             name="bio"
             rows={6}
             defaultValue={profile?.bio ?? ""}
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
           />
         </div>
 
@@ -69,7 +80,7 @@ export default async function ProfilePage({
 
         <button
           type="submit"
-          className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+          className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
           Save profile
         </button>
@@ -103,7 +114,7 @@ function Field({
         type={type}
         required={required}
         defaultValue={defaultValue ?? ""}
-        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
       />
     </div>
   );

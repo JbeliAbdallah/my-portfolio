@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { createEducation } from "../actions";
 
-export default function NewEducationPage() {
+type Props = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function NewEducationPage({ searchParams }: Props) {
+  const { error } = await searchParams;
+
   return (
     <div className="max-w-3xl">
       <Link
@@ -13,12 +21,20 @@ export default function NewEducationPage() {
 
       <h1 className="mt-4 text-3xl font-bold">Add Education</h1>
 
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-300">
+          {error}
+        </div>
+      )}
+
       <form
         action={createEducation}
         className="mt-8 space-y-6 rounded-xl border border-zinc-800 bg-zinc-900 p-6"
       >
         <Field label="Institution" name="institution" required />
+
         <Field label="Degree" name="degree" required />
+
         <Field label="Field of study" name="field" />
 
         <div>
@@ -28,15 +44,17 @@ export default function NewEducationPage() {
           >
             Description
           </label>
+
           <textarea
             id="description"
             name="description"
             rows={6}
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
           />
         </div>
 
         <Field label="Start date" name="startDate" type="date" />
+
         <Field label="End date" name="endDate" type="date" />
 
         <Field
@@ -58,7 +76,7 @@ export default function NewEducationPage() {
 
         <button
           type="submit"
-          className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+          className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
           Create education
         </button>
@@ -92,7 +110,7 @@ function Field({
         type={type}
         required={required}
         defaultValue={defaultValue}
-        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
       />
     </div>
   );

@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { createSocialLink } from "../actions";
 
-export default function NewSocialLinkPage() {
+type Props = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function NewSocialLinkPage({ searchParams }: Props) {
+  const { error } = await searchParams;
+
   return (
     <div className="max-w-3xl">
       <Link
@@ -12,6 +20,12 @@ export default function NewSocialLinkPage() {
       </Link>
 
       <h1 className="mt-4 text-3xl font-bold">Add Social Link</h1>
+
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-300">
+          {error}
+        </div>
+      )}
 
       <form
         action={createSocialLink}
@@ -53,7 +67,7 @@ export default function NewSocialLinkPage() {
 
         <button
           type="submit"
-          className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+          className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
           Create social link
         </button>
@@ -90,7 +104,7 @@ function Field({
         required={required}
         placeholder={placeholder}
         defaultValue={defaultValue}
-        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
       />
     </div>
   );

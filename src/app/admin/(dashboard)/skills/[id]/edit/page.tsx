@@ -3,12 +3,16 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { updateSkill } from "../../actions";
 
-export default async function EditSkillPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ id: string }>;
-}) {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function EditSkillPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { error } = await searchParams;
 
   const skill = await prisma.skill.findUnique({
     where: { id },
@@ -27,12 +31,20 @@ export default async function EditSkillPage({
 
       <h1 className="mt-4 text-3xl font-bold">Edit Skill</h1>
 
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-300">
+          {error}
+        </div>
+      )}
+
       <form
         action={updateSkill.bind(null, skill.id)}
         className="mt-8 space-y-6 rounded-xl border border-zinc-800 bg-zinc-900 p-6"
       >
         <Field label="Name" name="name" defaultValue={skill.name} required />
+
         <Field label="Category" name="category" defaultValue={skill.category} />
+
         <Field
           label="Level (%)"
           name="level"
@@ -41,7 +53,9 @@ export default async function EditSkillPage({
           max="100"
           defaultValue={skill.level?.toString()}
         />
+
         <Field label="Icon" name="icon" defaultValue={skill.icon} />
+
         <Field
           label="Display order"
           name="order"
@@ -61,7 +75,7 @@ export default async function EditSkillPage({
 
         <button
           type="submit"
-          className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+          className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
           Save changes
         </button>
@@ -101,7 +115,7 @@ function Field({
         min={min}
         max={max}
         defaultValue={defaultValue ?? ""}
-        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
       />
     </div>
   );

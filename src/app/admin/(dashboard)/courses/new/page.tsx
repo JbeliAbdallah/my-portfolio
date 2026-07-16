@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { createCourse } from "../actions";
 
-export default function NewCoursePage() {
+type Props = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function NewCoursePage({ searchParams }: Props) {
+  const { error } = await searchParams;
+
   return (
     <div className="max-w-3xl">
       <Link
@@ -13,11 +21,18 @@ export default function NewCoursePage() {
 
       <h1 className="mt-4 text-3xl font-bold">Add Course</h1>
 
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-300">
+          {error}
+        </div>
+      )}
+
       <form
         action={createCourse}
         className="mt-8 space-y-6 rounded-xl border border-zinc-800 bg-zinc-900 p-6"
       >
         <Field label="Title" name="title" required />
+
         <Field label="Slug" name="slug" placeholder="my-course" required />
 
         <div>
@@ -33,11 +48,12 @@ export default function NewCoursePage() {
             name="description"
             rows={6}
             required
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
           />
         </div>
 
         <Field label="Image URL" name="imageUrl" type="url" />
+
         <Field label="Course URL" name="courseUrl" type="url" />
 
         <label className="flex items-center gap-3 text-sm text-zinc-300">
@@ -47,7 +63,7 @@ export default function NewCoursePage() {
 
         <button
           type="submit"
-          className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+          className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
           Create course
         </button>
@@ -81,7 +97,7 @@ function Field({
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
       />
     </div>
   );

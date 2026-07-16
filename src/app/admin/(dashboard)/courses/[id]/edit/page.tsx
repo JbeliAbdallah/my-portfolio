@@ -3,12 +3,16 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { updateCourse } from "../../actions";
 
-export default async function EditCoursePage({
-  params,
-}: {
+type Props = {
   params: Promise<{ id: string }>;
-}) {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function EditCoursePage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { error } = await searchParams;
 
   const course = await prisma.course.findUnique({
     where: { id },
@@ -26,6 +30,12 @@ export default async function EditCoursePage({
       </Link>
 
       <h1 className="mt-4 text-3xl font-bold">Edit Course</h1>
+
+      {error && (
+        <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-300">
+          {error}
+        </div>
+      )}
 
       <form
         action={updateCourse.bind(null, course.id)}
@@ -54,7 +64,7 @@ export default async function EditCoursePage({
             rows={6}
             required
             defaultValue={course.description}
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
           />
         </div>
 
@@ -84,7 +94,7 @@ export default async function EditCoursePage({
 
         <button
           type="submit"
-          className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+          className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
           Save changes
         </button>
@@ -118,7 +128,7 @@ function Field({
         type={type}
         required={required}
         defaultValue={defaultValue ?? ""}
-        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
+        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
       />
     </div>
   );
