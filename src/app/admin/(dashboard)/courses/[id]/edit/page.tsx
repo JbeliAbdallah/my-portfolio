@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { updateCourse } from "../../actions";
+import Image from "next/image";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -68,12 +69,29 @@ export default async function EditCoursePage({ params, searchParams }: Props) {
           />
         </div>
 
-        <Field
-          label="Image URL"
-          name="imageUrl"
-          type="url"
-          defaultValue={course.imageUrl}
-        />
+        <div>
+          <label htmlFor="image" className="mb-2 block text-sm text-zinc-300">
+            Course Image
+          </label>
+
+          {course.imageUrl && (
+            <Image
+              src={course.imageUrl}
+              alt={course.title}
+              width={400}
+              height={225}
+              className="mb-4 rounded-lg border border-zinc-700 object-cover"
+            />
+          )}
+
+          <input
+            id="image"
+            name="image"
+            type="file"
+            accept="image/*"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          />
+        </div>
 
         <Field
           label="Course URL"

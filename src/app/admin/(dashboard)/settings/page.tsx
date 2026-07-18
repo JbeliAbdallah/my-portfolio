@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { saveSiteSettings } from "./actions";
+import Image from "next/image";
 
 export default async function SettingsPage({
   searchParams,
@@ -12,7 +13,7 @@ export default async function SettingsPage({
   const { saved, error } = await searchParams;
 
   const settings = await prisma.siteSettings.findFirst();
-
+  console.log("Site settings:", settings);
   return (
     <div className="max-w-3xl">
       <div>
@@ -65,22 +66,53 @@ export default async function SettingsPage({
           />
         </div>
 
-        <Field
-          label="Logo URL"
-          name="logoUrl"
-          type="url"
-          defaultValue={settings?.logoUrl}
-          placeholder="https://..."
-        />
+        <div>
+          <label htmlFor="logo" className="mb-2 block text-sm text-zinc-300">
+            Logo
+          </label>
 
-        <Field
-          label="Favicon URL"
-          name="faviconUrl"
-          type="url"
-          defaultValue={settings?.faviconUrl}
-          placeholder="https://..."
-        />
+          {settings?.logoUrl && (
+            <Image
+              src={settings.logoUrl}
+              alt="Logo"
+              width={200}
+              height={80}
+              className="mb-4 rounded-lg border border-zinc-700 object-contain"
+            />
+          )}
 
+          <input
+            id="logo"
+            name="logo"
+            type="file"
+            accept="image/*"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="favicon" className="mb-2 block text-sm text-zinc-300">
+            Favicon
+          </label>
+
+          {settings?.faviconUrl && (
+            <Image
+              src={settings.faviconUrl}
+              alt="Favicon"
+              width={64}
+              height={64}
+              className="mb-4 rounded-lg border border-zinc-700"
+            />
+          )}
+
+          <input
+            id="favicon"
+            name="favicon"
+            type="file"
+            accept="image/*"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          />
+        </div>
         <button
           type="submit"
           className="rounded-lg bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"

@@ -78,6 +78,45 @@ export default async function ProfilePage({ searchParams }: Props) {
 
         <Field label="Phone" name="phone" defaultValue={profile?.phone} />
 
+        <div>
+          <label htmlFor="avatar" className="mb-2 block text-sm text-zinc-300">
+            Avatar
+          </label>
+
+          <input
+            id="avatar"
+            name="avatar"
+            type="file"
+            accept="image/*"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="cv" className="mb-2 block text-sm text-zinc-300">
+            CV (PDF)
+          </label>
+
+          {profile?.cvUrl && (
+            <a
+              href={profile.cvUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-4 block text-sm text-blue-400 hover:underline"
+            >
+              View current CV
+            </a>
+          )}
+
+          <input
+            id="cv"
+            name="cv"
+            type="file"
+            accept=".pdf,application/pdf"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          />
+        </div>
+
         <button
           type="submit"
           className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"

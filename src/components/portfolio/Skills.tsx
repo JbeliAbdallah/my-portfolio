@@ -1,3 +1,5 @@
+import { getSkillIcon } from "@/lib/skill-icons";
+
 type Skill = {
   id: string;
   name: string;
@@ -59,42 +61,46 @@ export default function Skills({ skills }: SkillsProps) {
               </h3>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {categorySkills.map((skill) => (
-                  <article
-                    key={skill.id}
-                    className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        {skill.icon && (
-                          <span className="text-xl">{skill.icon}</span>
-                        )}
+                {categorySkills.map((skill) => {
+                  const Icon = getSkillIcon(skill.icon);
 
-                        <h4 className="font-medium text-white">{skill.name}</h4>
+                  return (
+                    <article
+                      key={skill.id}
+                      className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <Icon
+                            size={22}
+                            className="text-violet-400 flex-shrink-0"
+                          />
+
+                          <h4 className="font-medium text-white">
+                            {skill.name}
+                          </h4>
+                        </div>
+
+                        {skill.level !== null && (
+                          <span className="text-sm text-zinc-500">
+                            {skill.level}%
+                          </span>
+                        )}
                       </div>
 
                       {skill.level !== null && (
-                        <span className="text-sm text-zinc-500">
-                          {skill.level}%
-                        </span>
+                        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10">
+                          <div
+                            className="h-full rounded-full bg-violet-400"
+                            style={{
+                              width: `${Math.min(Math.max(skill.level, 0), 100)}%`,
+                            }}
+                          />
+                        </div>
                       )}
-                    </div>
-
-                    {skill.level !== null && (
-                      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10">
-                        <div
-                          className="h-full rounded-full bg-violet-400"
-                          style={{
-                            width: `${Math.min(
-                              Math.max(skill.level, 0),
-                              100,
-                            )}%`,
-                          }}
-                        />
-                      </div>
-                    )}
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
             </div>
           ))}

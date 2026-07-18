@@ -12,10 +12,6 @@ export async function markMessageAsRead(id: string) {
     where: { id },
     data: { isRead: true },
   });
-
-  revalidatePath("/admin");
-  revalidatePath("/admin/messages");
-  revalidatePath(`/admin/messages/${id}`);
 }
 
 export async function markMessageAsUnread(id: string) {

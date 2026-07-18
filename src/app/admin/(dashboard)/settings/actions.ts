@@ -6,6 +6,7 @@ import { settingsSchema } from "@/lib/validation/settings";
 import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { saveUploadedFile } from "@/lib/upload";
 
 function getSettingsData(formData: FormData) {
   return validate(settingsSchema, {
@@ -25,18 +26,30 @@ export async function saveSiteSettings(formData: FormData) {
     redirect(`/admin/settings?error=${encodeURIComponent(result.error)}`);
   }
 
+  const logo = formData.get("logo") as File | null;
+  const favicon = formData.get("favicon") as File | null;
+
+  const logoUrl = await saveUploadedFile(logo, "logos");
+  const faviconUrl = await saveUploadedFile(favicon, "favicons");
+
   const existingSettings = await prisma.siteSettings.findFirst();
+
+  const data = {
+    ...result.data,
+    ...(logoUrl && { logoUrl }),
+    ...(faviconUrl && { faviconUrl }),
+  };
 
   if (existingSettings) {
     await prisma.siteSettings.update({
       where: {
         id: existingSettings.id,
       },
-      data: result.data,
+      data,
     });
   } else {
     await prisma.siteSettings.create({
-      data: result.data,
+      data,
     });
   }
 

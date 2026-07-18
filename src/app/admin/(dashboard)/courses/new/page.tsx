@@ -52,8 +52,19 @@ export default async function NewCoursePage({ searchParams }: Props) {
           />
         </div>
 
-        <Field label="Image URL" name="imageUrl" type="url" />
+        <div>
+          <label htmlFor="image" className="mb-2 block text-sm text-zinc-300">
+            Course Image
+          </label>
 
+          <input
+            id="image"
+            name="image"
+            type="file"
+            accept="image/*"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          />
+        </div>
         <Field label="Course URL" name="courseUrl" type="url" />
 
         <label className="flex items-center gap-3 text-sm text-zinc-300">

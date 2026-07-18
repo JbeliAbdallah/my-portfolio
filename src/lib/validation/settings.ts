@@ -12,11 +12,12 @@ export const settingsSchema = z.object({
 
   logoUrl: z
     .union([z.url(), z.literal("")])
-    .transform((value) => (value === "" ? null : value)),
+    .optional()
+    .transform((value) => (value === "" || value === undefined ? null : value)),
 
   faviconUrl: z
     .union([z.url(), z.literal("")])
-    .transform((value) => (value === "" ? null : value)),
+    .optional()
+    .transform((value) => (value === "" || value === undefined ? null : value)),
 });
-
 export type SettingsInput = z.infer<typeof settingsSchema>;

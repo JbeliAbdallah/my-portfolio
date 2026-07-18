@@ -33,7 +33,6 @@ export default async function NewProjectPage({ searchParams }: Props) {
       >
         <Field label="Title" name="title" required />
         <Field label="Slug" name="slug" required />
-
         <div>
           <label
             htmlFor="description"
@@ -50,25 +49,32 @@ export default async function NewProjectPage({ searchParams }: Props) {
             className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-zinc-500"
           />
         </div>
+        <div>
+          <label htmlFor="image" className="mb-2 block text-sm text-zinc-300">
+            Project Image
+          </label>
 
-        <Field label="Image URL" name="imageUrl" type="url" />
+          <input
+            id="image"
+            name="image"
+            type="file"
+            accept="image/*"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          />
+        </div>{" "}
         <Field label="Live URL" name="liveUrl" type="url" />
         <Field label="GitHub URL" name="githubUrl" type="url" />
-
         <Field
           label="Technologies (comma separated)"
           name="technologies"
           placeholder="Next.js, TypeScript, PostgreSQL"
         />
-
         <Checkbox label="Featured project" name="featured" />
-
         <Checkbox
           label="Visible on portfolio"
           name="isVisible"
           defaultChecked
         />
-
         <button
           type="submit"
           className="rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200"

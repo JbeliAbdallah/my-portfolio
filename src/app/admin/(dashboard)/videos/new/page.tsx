@@ -57,8 +57,22 @@ export default async function NewVideoPage({ searchParams }: Props) {
           required
         />
 
-        <Field label="Thumbnail URL" name="thumbnailUrl" type="url" />
+        <div>
+          <label
+            htmlFor="thumbnail"
+            className="mb-2 block text-sm text-zinc-300"
+          >
+            Thumbnail
+          </label>
 
+          <input
+            id="thumbnail"
+            name="thumbnail"
+            type="file"
+            accept="image/*"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          />
+        </div>
         <Field label="Publication date" name="publishedAt" type="date" />
 
         <label className="flex items-center gap-3 text-sm text-zinc-300">

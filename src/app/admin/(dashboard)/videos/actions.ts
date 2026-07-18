@@ -6,6 +6,7 @@ import { videoSchema } from "@/lib/validation/video";
 import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { saveUploadedFile } from "@/lib/upload";
 
 function getVideoData(formData: FormData) {
   const publishedAt = String(formData.get("publishedAt") ?? "").trim();
@@ -29,8 +30,14 @@ export async function createVideo(formData: FormData) {
     redirect(`/admin/videos/new?error=${encodeURIComponent(result.error)}`);
   }
 
+  const thumbnail = formData.get("thumbnail") as File | null;
+  const thumbnailUrl = await saveUploadedFile(thumbnail, "videos");
+
   await prisma.video.create({
-    data: result.data,
+    data: {
+      ...result.data,
+      ...(thumbnailUrl && { thumbnailUrl }),
+    },
   });
 
   revalidatePath("/admin");
@@ -50,11 +57,16 @@ export async function updateVideo(id: string, formData: FormData) {
     );
   }
 
+  const thumbnail = formData.get("thumbnail") as File | null;
+  const thumbnailUrl = await saveUploadedFile(thumbnail, "videos");
+
   await prisma.video.update({
     where: { id },
-    data: result.data,
+    data: {
+      ...result.data,
+      ...(thumbnailUrl && { thumbnailUrl }),
+    },
   });
-
   revalidatePath("/admin");
   revalidatePath("/admin/videos");
 

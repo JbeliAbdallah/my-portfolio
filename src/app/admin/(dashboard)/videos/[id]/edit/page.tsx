@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { updateVideo } from "../../actions";
+import Image from "next/image";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -68,12 +69,32 @@ export default async function EditVideoPage({ params, searchParams }: Props) {
           required
         />
 
-        <Field
-          label="Thumbnail URL"
-          name="thumbnailUrl"
-          type="url"
-          defaultValue={video.thumbnailUrl}
-        />
+        <div>
+          <label
+            htmlFor="thumbnail"
+            className="mb-2 block text-sm text-zinc-300"
+          >
+            Thumbnail
+          </label>
+
+          {video.thumbnailUrl && (
+            <Image
+              src={video.thumbnailUrl}
+              alt={video.title}
+              width={400}
+              height={225}
+              className="mb-4 rounded-lg border border-zinc-700 object-cover"
+            />
+          )}
+
+          <input
+            id="thumbnail"
+            name="thumbnail"
+            type="file"
+            accept="image/*"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          />
+        </div>
 
         <Field
           label="Publication date"

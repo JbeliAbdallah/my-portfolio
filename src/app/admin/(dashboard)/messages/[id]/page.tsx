@@ -22,9 +22,13 @@ export default async function MessagePage({
     notFound();
   }
 
-  // Opening the message automatically marks it as read.
   if (!message.isRead) {
-    await markMessageAsRead(message.id);
+    await prisma.contactMessage.update({
+      where: { id: message.id },
+      data: { isRead: true },
+    });
+
+    message.isRead = true;
   }
 
   const replySubject = encodeURIComponent(`Re: ${message.subject}`);

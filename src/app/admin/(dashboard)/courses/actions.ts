@@ -6,6 +6,7 @@ import { courseSchema } from "@/lib/validation/course";
 import { validate } from "@/lib/validation/validate";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { saveUploadedFile } from "@/lib/upload";
 
 function getCourseData(formData: FormData) {
   return validate(courseSchema, {
@@ -27,8 +28,14 @@ export async function createCourse(formData: FormData) {
     redirect(`/admin/courses/new?error=${encodeURIComponent(result.error)}`);
   }
 
+  const image = formData.get("image") as File | null;
+  const imageUrl = await saveUploadedFile(image, "courses");
+
   await prisma.course.create({
-    data: result.data,
+    data: {
+      ...result.data,
+      ...(imageUrl && { imageUrl }),
+    },
   });
 
   revalidatePath("/admin");
@@ -48,9 +55,15 @@ export async function updateCourse(id: string, formData: FormData) {
     );
   }
 
+  const image = formData.get("image") as File | null;
+  const imageUrl = await saveUploadedFile(image, "courses");
+
   await prisma.course.update({
     where: { id },
-    data: result.data,
+    data: {
+      ...result.data,
+      ...(imageUrl && { imageUrl }),
+    },
   });
 
   revalidatePath("/admin");

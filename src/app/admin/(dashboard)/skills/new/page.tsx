@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createSkill } from "../actions";
+import { skillIconOptions } from "@/lib/skill-icons";
 
 type Props = {
   searchParams: Promise<{
@@ -41,8 +42,26 @@ export default async function NewSkillPage({ searchParams }: Props) {
 
         <Field label="Level (%)" name="level" type="number" min="0" max="100" />
 
-        <Field label="Icon" name="icon" placeholder="Optional for now" />
+        <div>
+          <label htmlFor="icon" className="mb-2 block text-sm text-zinc-300">
+            Icon
+          </label>
 
+          <select
+            id="icon"
+            name="icon"
+            defaultValue=""
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
+          >
+            <option value="">Select an icon</option>
+
+            {skillIconOptions.map((icon) => (
+              <option key={icon.value} value={icon.value}>
+                {icon.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <Field
           label="Display order"
           name="order"
