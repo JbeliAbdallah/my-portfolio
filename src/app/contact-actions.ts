@@ -6,16 +6,18 @@ import { redirect } from "next/navigation";
 import { contactSchema } from "@/lib/validation/contact";
 
 export async function sendContactMessage(formData: FormData) {
-  const data = contactSchema.parse({
+  const result = contactSchema.safeParse({
     name: String(formData.get("name") ?? ""),
     email: String(formData.get("email") ?? ""),
     subject: String(formData.get("subject") ?? ""),
     message: String(formData.get("message") ?? ""),
   });
 
-  if (!data.name || !data.email || !data.subject || !data.message) {
-    redirect("/?contactError=missing#contact");
+  if (!result.success) {
+    redirect("/?contactError=validation#contact");
   }
+
+  const data = result.data;
 
   await prisma.contactMessage.create({
     data: {

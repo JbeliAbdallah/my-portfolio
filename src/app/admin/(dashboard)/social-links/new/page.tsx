@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createSocialLink } from "../actions";
+import { socialIconOptions } from "@/lib/social-icons";
 
 type Props = {
   searchParams: Promise<{
@@ -31,12 +32,27 @@ export default async function NewSocialLinkPage({ searchParams }: Props) {
         action={createSocialLink}
         className="mt-8 space-y-6 rounded-xl border border-zinc-800 bg-zinc-900 p-6"
       >
-        <Field
-          label="Platform"
-          name="platform"
-          placeholder="GitHub, LinkedIn, YouTube..."
-          required
-        />
+        <div>
+          <label
+            htmlFor="platform"
+            className="mb-2 block text-sm text-zinc-300"
+          >
+            Platform
+          </label>
+
+          <select
+            id="platform"
+            name="platform"
+            defaultValue="GitHub"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3"
+          >
+            {socialIconOptions.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.value}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <Field
           label="URL"
@@ -45,8 +61,6 @@ export default async function NewSocialLinkPage({ searchParams }: Props) {
           placeholder="https://..."
           required
         />
-
-        <Field label="Icon" name="icon" placeholder="Optional for now" />
 
         <Field
           label="Display order"

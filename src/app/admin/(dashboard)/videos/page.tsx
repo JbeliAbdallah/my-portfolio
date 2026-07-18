@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteVideo } from "./actions";
+import { formatMonthYear } from "@/lib/date";
 
 export default async function VideosPage({
   searchParams,
@@ -66,7 +67,7 @@ export default async function VideosPage({
 
                 <p className="mt-2 text-xs text-zinc-500">
                   {video.publishedAt
-                    ? video.publishedAt.toLocaleDateString()
+                    ? formatMonthYear(video.publishedAt)
                     : "No publication date"}
                   {" • "}
                   {video.isVisible ? "Visible" : "Hidden"}

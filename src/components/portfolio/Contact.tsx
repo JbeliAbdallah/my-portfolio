@@ -56,10 +56,17 @@ export default function Contact({
               />
             )}
 
-            {contactError && (
+            {contactError === "missing" && (
               <ContactAlert
                 type="error"
                 message="Please complete all required fields."
+              />
+            )}
+
+            {contactError === "validation" && (
+              <ContactAlert
+                type="error"
+                message="Please make sure your message is at least 10 characters long and all fields are valid."
               />
             )}
 

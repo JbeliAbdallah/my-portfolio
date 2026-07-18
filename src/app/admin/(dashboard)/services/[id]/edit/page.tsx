@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { updateService } from "../../actions";
+import { serviceIconOptions } from "@/lib/service-icons";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -66,8 +67,26 @@ export default async function EditServicePage({ params, searchParams }: Props) {
           />
         </div>
 
-        <Field label="Icon" name="icon" defaultValue={service.icon} />
+        <div>
+          <label htmlFor="icon" className="mb-2 block text-sm text-zinc-300">
+            Icon
+          </label>
 
+          <select
+            id="icon"
+            name="icon"
+            defaultValue={service.icon ?? ""}
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
+          >
+            <option value="">Select an icon</option>
+
+            {serviceIconOptions.map((icon) => (
+              <option key={icon.value} value={icon.value}>
+                {icon.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <Field
           label="Display order"
           name="order"

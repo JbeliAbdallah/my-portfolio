@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteEducation } from "./actions";
+import { formatDateRange } from "@/lib/date";
 
 export default async function EducationPage({
   searchParams,
@@ -68,12 +69,7 @@ export default async function EducationPage({
                 </p>
 
                 <p className="mt-2 text-xs text-zinc-500">
-                  {item.startDate
-                    ? item.startDate.toLocaleDateString()
-                    : "No start date"}
-                  {" — "}
-                  {item.endDate ? item.endDate.toLocaleDateString() : "Present"}
-                  {" • "}
+                  {formatDateRange(item.startDate, item.endDate)} {" • "}
                   {item.isVisible ? "Visible" : "Hidden"}
                 </p>
               </div>

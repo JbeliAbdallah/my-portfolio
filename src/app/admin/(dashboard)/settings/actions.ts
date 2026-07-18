@@ -12,8 +12,6 @@ function getSettingsData(formData: FormData) {
   return validate(settingsSchema, {
     siteName: String(formData.get("siteName") ?? ""),
     siteDescription: String(formData.get("siteDescription") ?? ""),
-    logoUrl: String(formData.get("logoUrl") ?? ""),
-    faviconUrl: String(formData.get("faviconUrl") ?? ""),
   });
 }
 

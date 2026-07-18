@@ -1,3 +1,5 @@
+import { serviceIcons } from "@/lib/service-icons";
+
 type Service = {
   id: string;
   title: string;
@@ -43,7 +45,13 @@ export default function Services({ services }: ServicesProps) {
             >
               <div className="flex items-center justify-between">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-xl">
-                  {service.icon || "✦"}
+                  {(() => {
+                    const Icon = service.icon
+                      ? serviceIcons[service.icon]
+                      : null;
+
+                    return Icon ? <Icon /> : "✦";
+                  })()}
                 </div>
 
                 <span className="text-sm text-zinc-600">

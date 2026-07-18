@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteExperience } from "./actions";
+import { formatDateRange } from "@/lib/date";
 
 export default async function ExperiencePage({
   searchParams,
@@ -74,10 +75,11 @@ export default async function ExperiencePage({
                 </p>
 
                 <p className="mt-2 text-xs text-zinc-500">
-                  {experience.startDate.toLocaleDateString()} —{" "}
-                  {experience.isCurrent
-                    ? "Present"
-                    : experience.endDate?.toLocaleDateString() || "No end date"}
+                  {formatDateRange(
+                    experience.startDate,
+                    experience.endDate,
+                    experience.isCurrent,
+                  )}
                   {" • "}
                   {experience.isVisible ? "Visible" : "Hidden"}
                 </p>

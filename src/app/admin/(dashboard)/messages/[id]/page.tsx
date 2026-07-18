@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import {
-  deleteMessage,
-  markMessageAsRead,
-  markMessageAsUnread,
-} from "../actions";
+import { deleteMessage, markMessageAsUnread } from "../actions";
 
 export default async function MessagePage({
   params,

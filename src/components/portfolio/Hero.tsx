@@ -1,3 +1,5 @@
+import { getSocialIcon } from "@/lib/social-icons";
+
 type SocialLink = {
   id: string;
   platform: string;
@@ -90,7 +92,11 @@ export default function Hero({
                   rel="noreferrer"
                   className="text-sm text-zinc-500 transition hover:text-white"
                 >
-                  {socialLink.platform} ↗
+                  {(() => {
+                    const Icon = getSocialIcon(socialLink.platform);
+
+                    return <Icon className="h-6 w-6" />;
+                  })()}
                 </a>
               ))}
             </div>
