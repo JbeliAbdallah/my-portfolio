@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteMessage } from "./actions";
+import { formatDateTime } from "@/lib/date";
 
 export default async function MessagesPage({
   searchParams,
@@ -84,7 +85,7 @@ export default async function MessagesPage({
                 </p>
 
                 <p className="mt-2 text-xs text-zinc-600">
-                  {message.createdAt.toLocaleString()}
+                  {formatDateTime(message.createdAt)}{" "}
                 </p>
               </div>
 

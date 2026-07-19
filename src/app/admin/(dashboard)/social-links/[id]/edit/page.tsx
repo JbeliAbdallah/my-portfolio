@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { updateSocialLink } from "../../actions";
+import { socialIconOptions } from "@/lib/social-icons";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -44,12 +45,27 @@ export default async function EditSocialLinkPage({
         action={updateSocialLink.bind(null, socialLink.id)}
         className="mt-8 space-y-6 rounded-xl border border-zinc-800 bg-zinc-900 p-6"
       >
-        <Field
-          label="Platform"
-          name="platform"
-          defaultValue={socialLink.platform}
-          required
-        />
+        <div>
+          <label
+            htmlFor="platform"
+            className="mb-2 block text-sm text-zinc-300"
+          >
+            Platform
+          </label>
+
+          <select
+            id="platform"
+            name="platform"
+            defaultValue={socialLink.platform}
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-500"
+          >
+            {socialIconOptions.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.value}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <Field
           label="URL"
@@ -58,8 +74,6 @@ export default async function EditSocialLinkPage({
           defaultValue={socialLink.url}
           required
         />
-
-        <Field label="Icon" name="icon" defaultValue={socialLink.icon} />
 
         <Field
           label="Display order"

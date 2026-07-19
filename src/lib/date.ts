@@ -21,3 +21,10 @@ export function formatDateRange(
 
   return `${startText} — ${endText}`;
 }
+
+export function formatDateTime(date: Date | string) {
+  return new Intl.DateTimeFormat("en", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(date));
+}
