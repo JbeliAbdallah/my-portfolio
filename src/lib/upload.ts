@@ -25,7 +25,7 @@ export async function saveUploadedFile(
       {
         folder: `portfolio/${folder}`,
         public_id: uuid(),
-        resource_type: "auto",
+        resource_type: allowedExtensions?.includes(".pdf") ? "raw" : "image",
       },
       (
         error: UploadApiErrorResponse | undefined,
