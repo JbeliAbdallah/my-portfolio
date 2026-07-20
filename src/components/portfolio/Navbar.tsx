@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 type NavbarProps = {
   siteName: string;
+  logoUrl: string | null;
 };
 
 const desktopNavLinks = [
@@ -22,7 +24,7 @@ const mobileNavLinks = [
   { href: "#contact", label: "Contact" },
 ];
 
-export default function Navbar({ siteName }: NavbarProps) {
+export default function Navbar({ siteName, logoUrl }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -34,7 +36,18 @@ export default function Navbar({ siteName }: NavbarProps) {
             className="text-lg font-bold tracking-tight text-white"
             onClick={() => setMenuOpen(false)}
           >
-            {siteName}
+            {logoUrl ? (
+              <Image
+                src={logoUrl}
+                alt={siteName}
+                width={160}
+                height={48}
+                className="h-10 w-auto object-contain"
+                priority
+              />
+            ) : (
+              siteName
+            )}
           </a>
 
           <div className="hidden items-center gap-7 md:flex">

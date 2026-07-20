@@ -86,7 +86,7 @@ export default async function Home({
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
-      <Navbar siteName={siteName} />
+      <Navbar siteName={siteName} logoUrl={settings?.logoUrl ?? null} />
 
       <Hero
         fullName={fullName}
@@ -126,7 +126,11 @@ export default async function Home({
         contactError={contactError}
       />
 
-      <Footer siteName={siteName} socialLinks={socialLinks} />
+      <Footer
+        siteName={siteName}
+        logoUrl={settings?.logoUrl ?? null}
+        socialLinks={socialLinks}
+      />
     </main>
   );
 }
