@@ -24,7 +24,7 @@ export async function saveUploadedFile(
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: `portfolio/${folder}`,
-        public_id: uuid(),
+        public_id: `${uuid()}${extension}`,
         resource_type: allowedExtensions?.includes(".pdf") ? "raw" : "image",
       },
       (
