@@ -1,5 +1,6 @@
-import { mkdir, writeFile } from "fs/promises";
+import { cloudinary } from "@/lib/cloudinary";
 import path from "path";
+import type { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import { v4 as uuid } from "uuid";
 
 export async function saveUploadedFile(
@@ -11,23 +12,41 @@ export async function saveUploadedFile(
     return null;
   }
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+  const extension = path.extname(file.name).toLowerCase();
 
-  const extension = path.extname(file.name);
-  if (
-    allowedExtensions &&
-    !allowedExtensions.includes(extension.toLowerCase())
-  ) {
+  if (allowedExtensions && !allowedExtensions.includes(extension)) {
     throw new Error("Invalid file type.");
   }
-  const filename = `${uuid()}${extension}`;
 
-  const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
+  const buffer = Buffer.from(await file.arrayBuffer());
 
-  await mkdir(uploadDir, { recursive: true });
+  const result = await new Promise<UploadApiResponse>((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: `portfolio/${folder}`,
+        public_id: uuid(),
+        resource_type: "auto",
+      },
+      (
+        error: UploadApiErrorResponse | undefined,
+        result: UploadApiResponse | undefined,
+      ) => {
+        if (error) {
+          reject(error);
+          return;
+        }
 
-  await writeFile(path.join(uploadDir, filename), buffer);
+        if (!result) {
+          reject(new Error("Upload failed."));
+          return;
+        }
 
-  return `/uploads/${folder}/${filename}`;
+        resolve(result);
+      },
+    );
+
+    stream.end(buffer);
+  });
+
+  return result.secure_url;
 }
