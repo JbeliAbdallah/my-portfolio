@@ -30,6 +30,11 @@ export async function saveSiteSettings(formData: FormData) {
   const logoUrl = await saveUploadedFile(logo, "logos");
   const faviconUrl = await saveUploadedFile(favicon, "favicons");
 
+  console.log({
+    logoUrl,
+    faviconUrl,
+  });
+
   const existingSettings = await prisma.siteSettings.findFirst();
 
   const data = {
